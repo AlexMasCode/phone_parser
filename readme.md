@@ -10,9 +10,7 @@ The parsing process involves the following steps:
 
 1. The input string is processed by the PhoneNumberParser, which checks if it matches the grammar rules.
 
-2. The parser validates that the phone number starts with "+380" and is followed by exactly 9 digits.
-
-3. If the input string matches the defined format, it is considered a valid Ukrainian phone number. Otherwise, it is rejected.
+2. The parser validates that the phone number starts with "+380" and is followed by digits
 
 ## Usage
 
@@ -31,4 +29,42 @@ fn main() {
             println!("Invalid phone number: {}", phone_number);
         }
     }
+}
+```
+
+You can check different tests in this code block:
+
+```rust
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+
+    #[test]
+    fn test_valid_phone_numbers() -> anyhow::Result<()> {
+      let pair = PhoneNumberParser::parse(Rule::phoneNumber, "+380992121211")?.next().ok_or_else(|| anyhow!("no pair"))?;
+
+      assert_eq!( pair.as_span().start(), 0 );
+      assert_eq!( pair.as_span().end(), 13 );
+        Ok(())
+    }
+
+    #[test]
+    fn test_valid_phone_numbers_fail() -> anyhow::Result<()> {
+      let pair = PhoneNumberParser::parse(Rule::phoneNumber, "380992121211");
+
+      assert!( pair.is_err() );
+    Ok(())
+    }
+
+    #[test]
+    fn test_valid_phone_numbers_fail_lenght() -> anyhow::Result<()> {
+      let pair = PhoneNumberParser::parse(Rule::phoneNumber, "+380992121")?.next().ok_or_else(|| anyhow!("no pair"))?;
+
+      assert_eq!( pair.as_span().start(), 0 );
+      assert_eq!( pair.as_span().end(), 13, "Must be +38 and 10 digits in lenght!" );
+        Ok(())
+    }
+
 }
