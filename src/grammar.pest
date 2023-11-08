@@ -1,0 +1,2 @@
+phoneNumber = { "+" ~ "38" ~ digits }
+digits = { ASCII_DIGIT+ }

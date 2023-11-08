@@ -1,0 +1,16 @@
+[package]
+name = "phone_parser"
+version = "0.1.0"
+edition = "2021"
+
+
+description = "Parser which can parse phone numbers"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+peg = "0.8.2"
+pest = "2.6"
+pest_derive = "2.6"
+anyhow = "1.0"
