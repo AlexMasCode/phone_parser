@@ -4,9 +4,9 @@ use anyhow::{anyhow, Result};
 use structopt::StructOpt;
 use std::convert::Infallible;
 
-#[derive(Parser)]
-#[grammar = "grammar.pest"]
-struct MyParser;
+// #[derive(Parser)]
+// #[grammar = "grammar.pest"]
+// struct MyParser;
 
 peg::parser! {
   pub grammar word_and_number_parser() for str {
@@ -24,6 +24,37 @@ peg::parser! {
 
         pub rule word_or_number() -> &'input str
             = s:$(['a'..='z' | 'A'..='Z']+ / ['0'..='9']+) { s }
+
+
+            pub rule expression() -> Expression
+            = left:number() "+" right:number() {
+                Expression {
+                    left: left.to_string(),
+                    right: right.to_string(),
+                    operation: Operation::Add,
+                }
+            }
+            / left:number() "-" right:number() {
+                Expression {
+                    left: left.to_string(),
+                    right: right.to_string(),
+                    operation: Operation::Subtract,
+                }
+            }
+            / left:number() "*" right:number() {
+                Expression {
+                    left: left.to_string(),
+                    right: right.to_string(),
+                    operation: Operation::Multiply,
+                }
+            }
+            / left:number() "/" right:number() {
+                Expression {
+                    left: left.to_string(),
+                    right: right.to_string(),
+                    operation: Operation::Divide,
+                }
+            }
 
       pub rule date() -> Date
           = y:number() "-" m:number() "-" d:number() {
@@ -46,10 +77,79 @@ pub struct Date {
   pub year: String,
 }
 
+#[derive(Debug, PartialEq)]
+pub struct Expression {
+    pub left: String,
+    pub right: String,
+    pub operation: Operation,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Operation {
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+}
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    
+    #[test]
+    fn test_addition() {
+        assert_eq!(
+            word_and_number_parser::expression("2+3"),
+            Ok(Expression {
+                left: "2".to_string(),
+                right: "3".to_string(),
+                operation: Operation::Add,
+            })
+        );
+    }
+
+    #[test]
+    fn test_subtraction() {
+        assert_eq!(
+            word_and_number_parser::expression("5-2"),
+            Ok(Expression {
+                left: "5".to_string(),
+                right: "2".to_string(),
+                operation: Operation::Subtract,
+            })
+        );
+    }
+
+    #[test]
+    fn test_multiplication() {
+        assert_eq!(
+            word_and_number_parser::expression("4*6"),
+            Ok(Expression {
+                left: "4".to_string(),
+                right: "6".to_string(),
+                operation: Operation::Multiply,
+            })
+        );
+    }
+
+    #[test]
+    fn test_division() {
+        assert_eq!(
+            word_and_number_parser::expression("8/2"),
+            Ok(Expression {
+                left: "8".to_string(),
+                right: "2".to_string(),
+                operation: Operation::Divide,
+            })
+        );
+    }
+
+    #[test]
+    fn test_invalid_expression() {
+        let result = word_and_number_parser::expression("invalid+expression");
+        assert!(result.is_err());
+    }
     
     #[test]
     fn test_parse_valid_date() {
@@ -94,37 +194,3 @@ mod tests {
         assert!(word_and_number_parser::word_or_number("!@#").is_err());
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-
-//   use super::*;
-
-
-//     #[test]
-//     fn test_valid_phone_numbers() -> anyhow::Result<()> {
-//       let pair = PhoneNumberParser::parse(Rule::phoneNumber, "+380992121211")?.next().ok_or_else(|| anyhow!("no pair"))?;
-
-//       assert_eq!( pair.as_span().start(), 0 );
-//       assert_eq!( pair.as_span().end(), 13 );
-//         Ok(())
-//     }
-
-//     #[test]
-//     fn test_valid_phone_numbers_fail() -> anyhow::Result<()> {
-//       let pair = PhoneNumberParser::parse(Rule::phoneNumber, "380992121211");
-
-//       assert!( pair.is_err() );
-//     Ok(())
-//     }
-
-//     #[test]
-//     fn test_valid_phone_numbers_fail_lenght() -> anyhow::Result<()> {
-//       let pair = PhoneNumberParser::parse(Rule::phoneNumber, "+380992121")?.next().ok_or_else(|| anyhow!("no pair"))?;
-
-//       assert_eq!( pair.as_span().start(), 0 );
-//       assert_eq!( pair.as_span().end(), 13, "Must be +38 and 10 digits in lenght!" );
-//         Ok(())
-//     }
-
-// }
