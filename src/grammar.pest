@@ -1,2 +1,7 @@
-phoneNumber = { "+" ~ "38" ~ digits }
-digits = { ASCII_DIGIT+ }
+// phoneNumber = { "+" ~ "38" ~ digits }
+// digits = { ASCII_DIGIT+ }
+
+number = { ASCII_DIGIT+ }
+word = { ASCII_ALPHA+ }
+expression = { number ~ "+" ~ number }
+date = { number ~ "-" ~ number ~ "-" ~ number }

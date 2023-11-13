@@ -1,16 +1,26 @@
 pub use anyhow::anyhow;
 use phone_parser::*;
 
-pub fn main() -> anyhow::Result<()> {
+fn main() {
+    // Ваша входная строка
+    // let input = "42+17";
 
-    let phone_numbers = vec!["+380992121211", "+380993231211", "123456789"];
+    // match MyParser::parse(Rule::expression, input) {
+    //     Ok(pairs) => {
+    //         for pair in pairs {
+    //             match pair.as_rule() {
+    //                 Rule::expression => {
+    //                     let expression = parse_expression(pair);
+    //                     println!("Parsed expression: {:?}", expression);
+    //                 }
+    //                 _ => unreachable!(),
+    //             }
+    //         }
+    //     }
+    //     Err(err) => {
+    //         eprintln!("Error: {:?}", err);
+    //     }
+    // }
 
-    for phone_number in phone_numbers {
-        if phone_number_parser::phone_number(phone_number).is_ok() {
-            println!("Valid phone number: {}", phone_number);
-        } else {
-            println!("Invalid phone number: {}", phone_number);
-        }
-    }
-    Ok(())
+    // print!("dwdwdd");
 }
